@@ -4,10 +4,10 @@ const session = require("express-session");
 const MongoStore = require("connect-mongo");
 const flash = require("connect-flash");
 const methodOverride = require("method-override");
-const pageRoute = require("./routes/pageRoute");
-const courseRoute = require("./routes/courseRoute");
-const categoryRoute = require("./routes/categoryRoute");
-const userRoute = require("./routes/userRoute");
+const pageRoute = require("./routes/pageRoute").default;
+const courseRoute = require("./routes/courseRoute").default;
+const categoryRoute = require("./routes/categoryRoute").default;
+const userRoute = require("./routes/userRoute").default;
 
 const app = express();
 // Connect DB
