@@ -1,6 +1,6 @@
-const mongoose = require("mongoose");
-const bcrypt = require("bcrypt");
-const Schema = mongoose.Schema;
+import { Schema as _Schema, model } from "mongoose";
+import { genSalt, hash as _hash } from "bcrypt";
+const Schema = _Schema;
 
 const UserSchema = new Schema({
   name: {
@@ -22,7 +22,7 @@ const UserSchema = new Schema({
     default: "student"
   },
   courses:[{
-    type: mongoose.Schema.Types.ObjectId,
+    type: _Schema.Types.ObjectId,
     ref: 'Course'
   }]
 });
@@ -40,9 +40,9 @@ UserSchema.pre('save', function(next) {
   const user = this;
   if (!user.isModified('password')) return next();
 
-  bcrypt.genSalt(10, function(err, salt) {
+  genSalt(10, function(err, salt) {
       if (err) return next(err);
-      bcrypt.hash(user.password, salt, function(err, hash) {
+      _hash(user.password, salt, function(err, hash) {
           if (err) return next(err);
           user.password = hash;
           next();
@@ -58,5 +58,5 @@ passwordu hash e eşitledin mi tamammm e bu middleware olduğundan nextle de ç�
 senin password artık db de doğrudan parolan gibi gözükmek yerine hash abinin verdiği değerler olarak gözükecek Kriptografik yanee.
 */
 
-const User = mongoose.model("User", UserSchema);
-module.exports = User;
+const User = model("User", UserSchema);
+export default User;

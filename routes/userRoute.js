@@ -1,9 +1,9 @@
-const express = require('express')
-const  authController = require('../controllers/authController')
-const authMiddleware = require('../middlewares/authMiddleware');
-const { body } = require('express-validator');
-const User = require('../models/User');
-const router = express.Router();
+import { Router } from 'express';
+import { createUser, loginUser, logoutUser, getDashboardPage, deleteUser } from '../controllers/authController';
+import authMiddleware from '../middlewares/authMiddleware';
+import { body } from 'express-validator';
+import { findOne } from '../models/User';
+const router = Router();
 
 router.route('/signup').post(
     [
@@ -12,7 +12,7 @@ router.route('/signup').post(
 
        body('email').isEmail().withMessage('Please Enter Valid Email')
        .custom((userEmail) =>{
-           return User.findOne({email:userEmail}).then(user =>{
+           return findOne({email:userEmail}).then(user =>{
                if(user){
                    return Promise.reject('Email is already exists!')
                }
@@ -24,9 +24,9 @@ router.route('/signup').post(
 
     ],
 
-    authController.createUser);
-router.route('/login').post(authController.loginUser);
-router.route('/logout').get(authController.logoutUser);
-router.route('/dashboard').get(authMiddleware, authController.getDashboardPage);
-router.route('/:id').delete(authController.deleteUser);
-module.exports = router;
+    createUser);
+router.route('/login').post(loginUser);
+router.route('/logout').get(logoutUser);
+router.route('/dashboard').get(authMiddleware, getDashboardPage);
+router.route('/:id').delete(deleteUser);
+export default router;

@@ -1,6 +1,6 @@
-const mongoose = require("mongoose");
-const slugify = require('slugify')
-const Schema = mongoose.Schema;
+import { Schema as _Schema, model } from "mongoose";
+import slugify from 'slugify';
+const Schema = _Schema;
 
 const CategorySchema = new Schema({
   name: {
@@ -23,5 +23,5 @@ CategorySchema.pre('validate', function(next){
   next();
 })
 
-const Category = mongoose.model('Category', CategorySchema);
-module.exports = Category;
+const Category = model('Category', CategorySchema);
+export default Category;

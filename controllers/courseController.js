@@ -1,12 +1,12 @@
-const Course = require("../models/Course");
-const Category = require("../models/Category");
-const User = require('../models/User');
+import { create, find, findOne, findOneAndRemove } from "../models/Course";
+import Category from "../models/Category";
+import { findById } from '../models/User';
 
 //yeni bir kurs oluşturalım
 
-exports.createCourse = async (req, res) => {
+export async function createCourse(req, res) {
   try {
-  const course = await Course.create({
+  const course = await create({
     name: req.body.name,
     description: req.body.description,
     category: req.body.category,
@@ -18,10 +18,10 @@ exports.createCourse = async (req, res) => {
     req.flash("error", `Something happened`);
    res.status(201).redirect('/courses');
   }
-};
+}
 
 // kursları sıralayalım
-exports.getAllCourses = async (req, res) => {
+export async function getAllCourses(req, res) {
   try {
   const categorySlug = req.query.categories;
   const query = req.query.search; // arama kısmı için
@@ -40,7 +40,7 @@ exports.getAllCourses = async (req, res) => {
     filter.category = null
   } // aramada name veya category ile eşit değilse
 // aşşağıdaki find metodu ve regex kullanımı önemli 
-  const courses = await Course.find({$or:[
+  const courses = await find({$or:[
     {name: {$regex: '.*' + filter.name + '.*', $options:'i'}},
     {category: filter.category}
   ]
@@ -58,12 +58,12 @@ exports.getAllCourses = async (req, res) => {
       error
     });
   }
-};
+}
 // kursların kendi sayfalarını oluşturlım
-exports.getCourse = async (req, res) => {
+export async function getCourse(req, res) {
   try {
-  const user = await User.findById(req.session.userID);
-  const course = await Course.findOne({slug: req.params.slug}).populate('user')
+  const user = await findById(req.session.userID);
+  const course = await findOne({slug: req.params.slug}).populate('user')
   const categories = await Category.find();
     res.status(200).render('course', {
       course,
@@ -77,11 +77,11 @@ exports.getCourse = async (req, res) => {
       error
     });
   }
-};
+}
 // bir kursa kayıt olalım
-exports.enrollCourse = async (req, res) => {
+export async function enrollCourse(req, res) {
   try {
-  const user = await User.findById(req.session.userID);
+  const user = await findById(req.session.userID);
   await user.courses.push({_id:req.body.course_id});
   await user.save();
     res.status(200).redirect('/users/dashboard');
@@ -91,11 +91,11 @@ exports.enrollCourse = async (req, res) => {
       error
     });
   }
-};
+}
 // bir kursu bırakalım
-exports.releaseCourse = async (req, res) => {
+export async function releaseCourse(req, res) {
   try {
-  const user = await User.findById(req.session.userID);
+  const user = await findById(req.session.userID);
   await user.courses.pull({_id:req.body.course_id});
   await user.save();
     res.status(200).redirect('/users/dashboard');
@@ -105,14 +105,14 @@ exports.releaseCourse = async (req, res) => {
       error
     });
   }
-};
+}
 
 // bir kurs silelim
 
-exports.deleteCourse = async (req, res) => {
+export async function deleteCourse(req, res) {
   try {    
 
-    const course = await Course.findOneAndRemove({slug:req.params.slug})
+    const course = await findOneAndRemove({slug:req.params.slug})
 
     req.flash("error", `${course.name} has been removed successfully`);
 
@@ -124,13 +124,13 @@ exports.deleteCourse = async (req, res) => {
       error,
     });
   }
-};
+}
 // kurs update edelim
 
-exports.updateCourse = async (req, res) => {
+export async function updateCourse(req, res) {
   try {    
 
-    const course = await Course.findOne({slug:req.params.slug});
+    const course = await findOne({slug:req.params.slug});
     course.name = req.body.name;
     course.description = req.body.description;
     course.category = req.body.category;
@@ -145,6 +145,6 @@ exports.updateCourse = async (req, res) => {
       error,
     });
   }
-};
+}
 
 

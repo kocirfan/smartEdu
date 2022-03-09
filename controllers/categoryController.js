@@ -1,8 +1,8 @@
-const Category = require("../models/Category");
+import Category from "../models/Category";
 
 //yeni bir kurs oluşturalım
 
-exports.createCategory = async (req, res) => {
+export async function createCategory(req, res) {
   try {
   const category = await Category.create(req.body);
   
@@ -13,10 +13,10 @@ exports.createCategory = async (req, res) => {
       error
     });
   }
-};
+}
 
 // kategori silelim
-exports.deleteCategory = async (req, res) => {
+export async function deleteCategory(req, res) {
   try {    
 
      await Category.findByIdAndRemove(req.params.id)
@@ -29,4 +29,4 @@ exports.deleteCategory = async (req, res) => {
       error,
     });
   }
-};
+}

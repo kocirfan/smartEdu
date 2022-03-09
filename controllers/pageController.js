@@ -1,13 +1,13 @@
-const nodemailer = require("nodemailer");
-const Course = require('../models/Course');
-const User = require('../models/User');
+import { createTransport, getTestMessageUrl } from "nodemailer";
+import { find } from '../models/Course';
+import { countDocuments } from '../models/User';
 
 
-exports.getIndexPage = async (req, res) => {
-  const courses = await Course.find().sort('-createdAt').limit(2);
-  const totalCourses = await Course.find().countDocuments();
-  const totalStudents = await User.countDocuments({role: 'student'});
-  const totalTeachers = await  User.countDocuments({role: 'teacher'});
+export async function getIndexPage(req, res) {
+  const courses = await find().sort('-createdAt').limit(2);
+  const totalCourses = await find().countDocuments();
+  const totalStudents = await countDocuments({role: 'student'});
+  const totalTeachers = await  countDocuments({role: 'teacher'});
  
   res.status(200).render("index", {
     page_name: "index",
@@ -16,33 +16,33 @@ exports.getIndexPage = async (req, res) => {
     totalStudents,
     totalTeachers
   });
-};
+}
 
-exports.getAboutPage = (req, res) => {
+export function getAboutPage(req, res) {
   res.status(200).render("about", {
     page_name: "about",
   });
-};
+}
 
-exports.getRegisterPage = (req, res) => {
+export function getRegisterPage(req, res) {
   res.status(200).render("register", {
     page_name: "register",
   });
-};
+}
 
-exports.getLoginPage = (req, res) => {
+export function getLoginPage(req, res) {
   res.status(200).render("login", {
     page_name: "login",
   });
-};
+}
 // Contact kısmını oluşturalım
-exports.getContactPage = (req, res) => {
+export function getContactPage(req, res) {
   res.status(200).render("contact", {
     page_name: "contact",
   });
-};
+}
 
-exports.sendEmail = async (req, res) => {
+export async function sendEmail(req, res) {
   
   try{ 
   /* aşşağıdaki html yapısı contact sayfasındaki name email ve message kısmıyla uyumlu olmalı 
@@ -58,7 +58,7 @@ exports.sendEmail = async (req, res) => {
   `
   /* ardından burada nodemailler isimli üçüncü parti yazılımı indirerek ayarlarımızı yapmya başlıyoruz
   ilk olarak host kısmında hangi email servisinden yararlanacağımızı belirledik. */
-  let transporter = nodemailer.createTransport({
+  let transporter = createTransport({
     host: "smtp.gmail.com",
     port: 465,
     secure: true, // true for 465, false for other ports
@@ -82,7 +82,7 @@ burada hedef email adresini gösterdik ve yukarıda oluşturduğumuz html yapıs
   // Message sent: <b658f8ca-6296-ccf4-8306-87d57a0b4321@example.com>
 
   // Preview only available when sending through an Ethereal account
-  console.log("Preview URL: %s", nodemailer.getTestMessageUrl(info));
+  console.log("Preview URL: %s", getTestMessageUrl(info));
   // Preview URL: https://ethereal.email/message/WaQKMgKddxQDoou...
 
 /* burada flash mesaj kısmını yapalım */
@@ -98,6 +98,6 @@ burada hedef email adresini gösterdik ve yukarıda oluşturduğumuz html yapıs
   res.status(200).redirect('contact');
 }
 
-};
+}
 
 

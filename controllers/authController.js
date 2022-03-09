@@ -1,14 +1,14 @@
-const User = require("../models/User");
-const bcrypt = require("bcrypt");
-const Category = require('../models/Category');
-const Course = require('../models/Course');
-const { validationResult } = require("express-validator");
+import { create, findOne, find, findByIdAndRemove } from "../models/User";
+import { compare } from "bcrypt";
+import Category from '../models/Category';
+import { find as _find, deleteMany } from '../models/Course';
+import { validationResult } from "express-validator";
 
 //yeni bir kullanıcı oluşturalım
 
-exports.createUser = async (req, res) => {
+export async function createUser(req, res) {
   try {
-  const user = await User.create(req.body);
+  const user = await create(req.body);
   
     res.status(201).redirect('/login');
     
@@ -21,17 +21,17 @@ exports.createUser = async (req, res) => {
     
     res.status(400).redirect('/register');
   }
-};
+}
 
 // kullanıcının login olmsası için gereken işlemleri yapalım
 
-exports.loginUser = async (req, res) => {
+export async function loginUser(req, res) {
   try {
     const {email, password} = req.body;
 
-    await User.findOne({email: email}, (err, user)=>{
+    await findOne({email: email}, (err, user)=>{
       if(user){
-        bcrypt.compare(password, user.password, (err, same)=>{
+        compare(password, user.password, (err, same)=>{
           
             if(same){
               // USER SESSION
@@ -55,21 +55,21 @@ exports.loginUser = async (req, res) => {
       error
     });
   }
-};
+}
 
 // logout işlemlerini yapalım
-exports.logoutUser = (req, res)=>{
+export function logoutUser(req, res){
   req.session.destroy(()=>{
     res.redirect('/');
   })
 }
 
 // deshbord için 
-exports.getDashboardPage = async (req, res) => {
-  const user = await User.findOne({_id: req.session.userID}).populate('courses')
+export async function getDashboardPage(req, res) {
+  const user = await findOne({_id: req.session.userID}).populate('courses')
   const categories = await Category.find();
-  const courses = await Course.find({user:req.session.userID})
-  const users = await User.find();
+  const courses = await _find({user:req.session.userID})
+  const users = await find();
   res.status(200).render("dashboard", {
     page_name: "dashboard",
     user,
@@ -77,14 +77,14 @@ exports.getDashboardPage = async (req, res) => {
     courses,
     users
   });
-};
+}
 // kullanıcı siilelim
-exports.deleteUser = async (req, res) => {
+export async function deleteUser(req, res) {
   try {    
 
-     await User.findByIdAndRemove(req.params.id) // kullanıcıyı id ile bul sil
+     await findByIdAndRemove(req.params.id) // kullanıcıyı id ile bul sil
 
-     await Course.deleteMany({user:req.params.id})  // kullanıcıya ait olan kursları sil
+     await deleteMany({user:req.params.id})  // kullanıcıya ait olan kursları sil
 
     res.status(200).redirect('/users/dashboard');
 
@@ -94,5 +94,5 @@ exports.deleteUser = async (req, res) => {
       error,
     });
   }
-};
+}
 

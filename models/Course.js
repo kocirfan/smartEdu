@@ -1,6 +1,6 @@
-const mongoose = require("mongoose");
-const slugify = require('slugify')
-const Schema = mongoose.Schema;
+import { Schema as _Schema, model } from "mongoose";
+import slugify from 'slugify';
+const Schema = _Schema;
 
 const CourseSchema = new Schema({
   name: {
@@ -22,11 +22,11 @@ const CourseSchema = new Schema({
     unique: true
   },
   category:{
-    type: mongoose.Schema.Types.ObjectId,
+    type: _Schema.Types.ObjectId,
     ref: 'Category'
   },
   user: {
-    type: mongoose.Schema.Types.ObjectId,
+    type: _Schema.Types.ObjectId,
     ref: 'User'
   }
 });
@@ -39,5 +39,5 @@ CourseSchema.pre('validate', function(next){
   next();
 })
 
-const Course = mongoose.model('Course', CourseSchema);
-module.exports = Course;
+const Course = model('Course', CourseSchema);
+export default Course;
